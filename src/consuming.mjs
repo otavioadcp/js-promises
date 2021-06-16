@@ -46,4 +46,20 @@ export function chainCatch() {
     //this 'catch' will work with the two 'then' above him, so, if one of then fails, will end at this catch block
     .catch((error) => setText(error));
 }
-export function final() {}
+export function final() {
+  // show the waiting message at the screen when the 'Final Update' button is clicked
+  showWaiting();
+  axios
+    .get("http://localhost:3000/orders/1")
+    .then(({ data }) => {
+      return axios.get(
+        `http://localhost:3000/addresses/${data.shippingAddress}`
+      );
+    })
+    .then(({ data }) => setText(`City: ${data.city}`))
+    .catch((error) => setText(error))
+    .finally(() => {
+      // hide the 'Waiting' message 1.5 seconds after receive the result from the API
+      setTimeout(() => hideWaiting(), 1500);
+    });
+}
