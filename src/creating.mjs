@@ -61,10 +61,10 @@ export function allPromises() {
   const userTypes = axios.get("http://localhost:3000/userTypes");
   const order = axios.get("http://localhost:3000/orderStatuses");
 
-  //Waits for ALL promises to be fulfilled or ONE of them be rejected
+  //Waits for ALL promises to be fulfilled or ONE of them be rejected and if it do, them go to the catch block
   Promise.all([categories, userTypes, order])
     .then(([cat, user, order]) => {
-      setText("  Categories   ");
+      setText("");
       appendText(JSON.stringify(cat.data));
       appendText("***" + JSON.stringify(user.data) + "***");
       appendText(JSON.stringify(order.data));
@@ -74,6 +74,30 @@ export function allPromises() {
     });
 }
 
-export function allSettled() {}
+export function allSettled() {
+  const categories = axios.get("http://localhost:3000/itemCategories");
+  const userTypes = axios.get("http://localhost:3000/userTypes");
+  const order = axios.get("http://localhost:3000/orderStatuses");
+
+  //Wait for all promises but return all data inside an array with a status prop
+  //If the status equals 'fulfilled', the data will be at the 'value' prop
+  //If the status equals 'rejected', the reason will be available at the 'reason' prop
+  Promise.allSettled([categories, userTypes, order])
+    .then((values) => {
+      setText("");
+
+      let result = values.map((item) => {
+        if (item.status === "fulfilled") {
+          return `Fulfilled: ${JSON.stringify(item.value.data[0])} `;
+        }
+        return `Rejected: ${item.reason.message}`;
+      });
+
+      setText(result);
+    })
+    .catch((reason) => {
+      setText(reason);
+    });
+}
 
 export function race() {}
