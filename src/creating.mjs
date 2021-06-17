@@ -56,7 +56,23 @@ export function xhr() {
     .catch((reason) => setText(reason + " --Catch Block--"));
 }
 
-export function allPromises() {}
+export function allPromises() {
+  const categories = axios.get("http://localhost:3000/itemCategories");
+  const userTypes = axios.get("http://localhost:3000/userTypes");
+  const order = axios.get("http://localhost:3000/orderStatuses");
+
+  //Waits for ALL promises to be fulfilled or ONE of them be rejected
+  Promise.all([categories, userTypes, order])
+    .then(([cat, user, order]) => {
+      setText("  Categories   ");
+      appendText(JSON.stringify(cat.data));
+      appendText("***" + JSON.stringify(user.data) + "***");
+      appendText(JSON.stringify(order.data));
+    })
+    .catch((reason) => {
+      setText(reason);
+    });
+}
 
 export function allSettled() {}
 
